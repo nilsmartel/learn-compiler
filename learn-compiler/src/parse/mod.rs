@@ -14,7 +14,7 @@ where
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Ident(String);
+pub struct Ident(pub String);
 
 impl Parse for Ident {
     fn parse(i: &str) -> IResult<&str, Ident> {
@@ -34,6 +34,27 @@ impl Parse for Ident {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Type(pub String);
+
+impl Parse for Type {
+    fn parse(i: &str) -> IResult<&str, Type> {
+        use nom::bytes::complete::take_while;
+        use nom::character::complete::alpha1;
+        use nom::character::is_alphanumeric;
+        use nom::combinator::map;
+        use nom::sequence::pair;
+
+        map(
+            pair(
+                alpha1,
+                take_while(|c: char| is_alphanumeric(c as u8) || c == '_'),
+            ),
+            |(a, b)| Type(format!("{}{}", a, b)),
+        )(i)
+    }
+}
+
 #[cfg(test)]
 mod ident_tests {
     use super::Ident;
@@ -47,3 +68,18 @@ mod ident_tests {
         )
     }
 }
+
+#[derive(Clone, Debug)]
+pub struct Ast {
+    pub functions: Vec<Function>,
+}
+
+#[derive(Clone, Debug)]
+pub struct Function {
+    pub name: Ident,
+    pub args: Vec<(Ident, Type)>,
+    pub body: Body,
+}
+
+#[derive(Clone, Debug)]
+pub struct Body {}
