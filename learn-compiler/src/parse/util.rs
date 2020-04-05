@@ -11,6 +11,8 @@ where
     use nom::character::complete::one_of;
     use nom::multi::many0;
     let skip = many0(one_of("\n\r\t "));
+    preceded(skip, f)
+}
 
 pub fn delimited_curly<'a, T>(
     f: impl Fn(&'a str) -> IResult<&'a str, T>,
@@ -18,10 +20,6 @@ pub fn delimited_curly<'a, T>(
     delimited(char('{'), f, char('}'))
 }
 
-    move |s: &str| {
-        let (result, _) = skip(s)?;
-        f(result)
-    }
 pub fn delimited_paren<'a, T>(
     f: impl Fn(&'a str) -> IResult<&'a str, T>,
 ) -> impl Fn(&'a str) -> IResult<&'a str, T> {
