@@ -34,6 +34,20 @@ impl Parse for Ident {
     }
 }
 
+#[cfg(test)]
+mod ident_tests {
+    use super::Ident;
+    use super::Parse;
+
+    #[test]
+    fn simple() {
+        assert_eq!(
+            Ident::parse("hello_world12345"),
+            Ok(("", Ident("hello_world12345".to_string())))
+        )
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Type(pub String);
 
@@ -52,20 +66,6 @@ impl Parse for Type {
             ),
             |(a, b)| Type(format!("{}{}", a, b)),
         )(i)
-    }
-}
-
-#[cfg(test)]
-mod ident_tests {
-    use super::Ident;
-    use super::Parse;
-
-    #[test]
-    fn simple() {
-        assert_eq!(
-            Ident::parse("hello_world12345"),
-            Ok(("", Ident("hello_world12345".to_string())))
-        )
     }
 }
 
