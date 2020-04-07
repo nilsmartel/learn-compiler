@@ -1,9 +1,8 @@
-mod expression;
+pub mod expression;
 mod keyword;
 mod literal;
 mod util;
 mod value;
-pub use expression;
 pub use expression::Expression;
 pub use literal::Literal;
 use nom::IResult;
