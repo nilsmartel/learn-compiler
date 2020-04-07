@@ -17,6 +17,14 @@ impl Parse for If {
     }
 }
 
+pub struct Else {}
+
+impl Parse for Else {
+    fn parse(input: &str) -> IResult<&str, Else> {
+        map(tag("else"), |_| Else {})(input)
+    }
+}
+
 pub struct While {}
 
 impl Parse for While {
@@ -30,5 +38,13 @@ pub struct Return {}
 impl Parse for Return {
     fn parse(input: &str) -> IResult<&str, Return> {
         map(tag("return"), |_| Return {})(input)
+    }
+}
+
+pub struct Let {}
+
+impl Parse for Let {
+    fn parse(input: &str) -> IResult<&str, Let> {
+        map(tag("let"), |_| Let {})(input)
     }
 }
