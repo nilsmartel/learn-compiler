@@ -14,6 +14,10 @@ where
     preceded(skip, f)
 }
 
+pub fn tag_ws<'a>(s: &'a str) -> impl Fn(&'a str) -> IResult<&'a str, &'a str> {
+    skip_whitespace(nom::bytes::complete::tag(s))
+}
+
 pub fn delimited_curly<'a, T>(
     f: impl Fn(&'a str) -> IResult<&'a str, T>,
 ) -> impl Fn(&'a str) -> IResult<&'a str, T> {
