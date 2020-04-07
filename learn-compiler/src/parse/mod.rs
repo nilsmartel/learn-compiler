@@ -1,12 +1,13 @@
 mod expression;
 mod keyword;
-mod value;
-use nom::IResult;
 mod literal;
+mod util;
+mod value;
+pub use expression;
 pub use expression::Expression;
 pub use literal::Literal;
+use nom::IResult;
 pub use value::Value;
-mod util;
 
 pub trait Parse
 where
