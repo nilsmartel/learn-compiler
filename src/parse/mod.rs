@@ -75,6 +75,21 @@ impl Parse for Type {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn fibonacci_sample() {
+        let input = include_str!("../../sample-code/fibonacci.abc");
+        let result = Ast::parse_ws(input);
+
+        assert!(result.is_ok());
+
+        assert_eq!(result.unwrap().0, "");
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Ast {
     pub functions: Vec<Function>,
