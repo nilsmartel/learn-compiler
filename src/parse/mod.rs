@@ -92,6 +92,12 @@ pub struct Body {
     statements: Vec<Statement>,
 }
 
+impl Parse for Body {
+    fn parse(input: &str) -> IResult<&str, Self> {
+        unimplemented!()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub enum Statement {
     Let {
@@ -100,12 +106,65 @@ pub enum Statement {
     },
     If {
         condition: Expression,
-        then: Box<Statement>,
-        otherwise: Option<Box<Statement>>,
+        then: Box<Body>,
+        otherwise: Option<Box<Body>>,
     },
     While {
         condition: Expression,
-        then: Box<Statement>,
+        then: Box<Body>,
     },
     Return(Option<Expression>),
+}
+
+impl Parse for Statement {
+    fn parse(input: &str) -> IResult<&str, Self> {
+        use nom::{
+            branch::alt,
+            combinator::{map, opt},
+            sequence::{pair, preceded, tuple},
+        };
+        use util::{delimited_curly, skip_whitespace, tag_ws};
+
+        alt((
+            map(
+                pair(
+                    preceded(keyword::Let::parse, Ident::parse_ws),
+                    opt(preceded(tag_ws("="), Expression::parse_ws)),
+                ),
+                |(name, assign)| Statement::Let { name, assign },
+            ),
+            map(
+                pair(
+                    preceded(keyword::While::parse, Expression::parse_ws),
+                    skip_whitespace(delimited_curly(Body::parse_ws)),
+                ),
+                |(condition, then)| Statement::While {
+                    condition,
+                    then: Box::new(then),
+                },
+            ),
+            map(
+                tuple((
+                    preceded(keyword::If::parse, Expression::parse_ws),
+                    skip_whitespace(delimited_curly(Body::parse_ws)),
+                    opt(map(
+                        preceded(
+                            keyword::Else::parse_ws,
+                            skip_whitespace(delimited_curly(Body::parse_ws)),
+                        ),
+                        Box::new,
+                    )),
+                )),
+                |(condition, then, otherwise)| Statement::If {
+                    condition,
+                    then: Box::new(then),
+                    otherwise,
+                },
+            ),
+            map(
+                preceded(keyword::Return::parse, opt(Expression::parse_ws)),
+                Statement::Return,
+            ),
+        ))(input)
+    }
 }
