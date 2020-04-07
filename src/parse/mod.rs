@@ -80,11 +80,40 @@ pub struct Ast {
     pub functions: Vec<Function>,
 }
 
+impl Parse for Ast {
+    fn parse(input: &str) -> IResult<&str, Self> {
+        use nom::{combinator::map, multi::many0};
+
+        map(many0(Function::parse_ws), |functions| Ast { functions })(input)
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct Function {
     pub name: Ident,
     pub args: Vec<(Ident, Type)>,
     pub body: Body,
+}
+
+impl Parse for Function {
+    fn parse(input: &str) -> IResult<&str, Self> {
+        use nom::combinator::map;
+        use nom::multi::separated_list;
+        use nom::sequence::{preceded, separated_pair, tuple};
+        use util::{skip_whitespace, tag_ws};
+        let function_name_parser = preceded(keyword::Function::parse, Ident::parse_ws);
+        let identtype_parser = separated_pair(Ident::parse_ws, tag_ws(":"), Type::parse_ws);
+        let args_parser = skip_whitespace(util::delimited_paren(separated_list(
+            tag_ws(","),
+            identtype_parser,
+        )));
+        let body_parser = skip_whitespace(util::delimited_curly(Body::parse_ws));
+
+        map(
+            tuple((function_name_parser, args_parser, body_parser)),
+            |(name, args, body)| Function { name, args, body },
+        )(input)
+    }
 }
 
 #[derive(Clone, Debug)]
