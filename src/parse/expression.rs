@@ -70,7 +70,7 @@ fn divide(i: &str) -> IResult<&str, Expression> {
 fn not(i: &str) -> IResult<&str, Expression> {
     alt((
         map(preceded(tag("!"), literal), |e| {
-            Expression::Negative(Box::new(e))
+            Expression::Not(Box::new(e))
         }),
         negative,
     ))(i)
