@@ -82,4 +82,27 @@ pub struct Function {
 }
 
 #[derive(Clone, Debug)]
-pub struct Body {}
+pub struct Body {
+    statements: Vec<Statement>,
+}
+
+#[derive(Clone, Debug)]
+pub enum Statement {
+    Let {
+        name: Ident,
+        assign: Option<Expression>,
+    },
+    If {
+        condition: Expression,
+        then: Box<Statement>,
+        otherwise: Option<Box<Statement>>,
+    },
+    While {
+        condition: Expression,
+        then: Box<Statement>,
+    },
+    Return(Option<Expression>),
+}
+
+#[derive(Clone, Debug)]
+pub enum Expression {}
