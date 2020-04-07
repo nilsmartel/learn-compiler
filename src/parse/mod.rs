@@ -94,7 +94,9 @@ pub struct Body {
 
 impl Parse for Body {
     fn parse(input: &str) -> IResult<&str, Self> {
-        unimplemented!()
+        use nom::{combinator::map, multi::many0};
+
+        map(many0(Statement::parse_ws), |statements| Body { statements })(input)
     }
 }
 
