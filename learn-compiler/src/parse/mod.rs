@@ -1,7 +1,9 @@
+mod expression;
 mod keyword;
 mod value;
 use nom::IResult;
 mod literal;
+pub use expression::Expression;
 pub use literal::Literal;
 pub use value::Value;
 mod util;
@@ -106,24 +108,4 @@ pub enum Statement {
         then: Box<Statement>,
     },
     Return(Option<Expression>),
-}
-
-#[derive(Clone, Debug)]
-pub enum Expression {
-    Or(Vec<Expression>),
-    And(Vec<Expression>),
-    Add(Vec<Expression>),
-    Subtract(Vec<Expression>),
-    Multiply(Vec<Expression>),
-    Divide(Vec<Expression>),
-    Not(Box<Expression>),
-    Negative(Box<Expression>),
-    Literal(Literal),
-    Value(value::Value),
-}
-
-impl Parse for Expression {
-    fn parse(input: &str) -> IResult<&str, Self> {
-        unimplemented!()
-    }
 }
