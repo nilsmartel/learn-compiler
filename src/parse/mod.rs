@@ -98,7 +98,9 @@ mod tests {
                 Function {
                     name: Ident("hello".to_string()),
                     args: Vec::new(),
-                    body: Vec::new(),
+                    body: Body {
+                        statements: Vec::new()
+                    },
                 }
             ))
         )
