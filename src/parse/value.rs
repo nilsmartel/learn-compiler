@@ -1,12 +1,14 @@
 use crate::parse::Parse;
 use nom::IResult;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Value {
     Boolean(bool),
     Integer(i64),
     Float(f64),
 }
+
+impl std::cmp::Eq for Value {}
 
 impl Parse for Value {
     fn parse(input: &str) -> IResult<&str, Self> {

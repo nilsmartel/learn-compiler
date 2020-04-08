@@ -1,7 +1,7 @@
 use crate::parse::*;
 use nom::IResult;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Literal {
     pub ident: Ident,
     pub call_arguments: Option<Vec<Expression>>,

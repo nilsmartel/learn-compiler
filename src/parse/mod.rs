@@ -88,9 +88,24 @@ mod tests {
 
         assert_eq!(result.unwrap().0, "");
     }
+
+    #[test]
+    fn function_simple() {
+        assert_eq!(
+            Function::parse("function hello() {}"),
+            Ok((
+                "",
+                Function {
+                    name: Ident("hello".to_string()),
+                    args: Vec::new(),
+                    body: Vec::new(),
+                }
+            ))
+        )
+    }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Ast {
     pub functions: Vec<Function>,
 }
@@ -103,7 +118,7 @@ impl Parse for Ast {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Function {
     pub name: Ident,
     pub args: Vec<(Ident, Type)>,
@@ -131,7 +146,7 @@ impl Parse for Function {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Body {
     statements: Vec<Statement>,
 }
@@ -144,7 +159,7 @@ impl Parse for Body {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Statement {
     Let {
         name: Ident,

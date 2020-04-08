@@ -5,7 +5,7 @@ use nom::{
 };
 use util::{skip_whitespace, tag_ws};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Expression {
     Or(Vec<Expression>),
     And(Vec<Expression>),
