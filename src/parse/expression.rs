@@ -19,54 +19,73 @@ pub enum Expression {
     Value(value::Value),
 }
 
+#[cfg(test)]
+mod test_expression {
+    use super::*;
+    #[test]
+    fn value() {
+        assert_eq!(
+            Expression::parse("true"),
+            Ok(("", Expression::Value(Value::Boolean(true))),)
+        );
+    }
+}
+
 impl Parse for Expression {
     fn parse(input: &str) -> IResult<&str, Self> {
         or(input)
     }
 }
 
+#[inline]
 fn or(i: &str) -> IResult<&str, Expression> {
-    map(
+    map_vec(
         separated_nonempty_list(tag_ws("|"), skip_whitespace(and)),
         Expression::Or,
     )(i)
 }
 
+#[inline]
 fn and(i: &str) -> IResult<&str, Expression> {
-    map(
+    map_vec(
         separated_nonempty_list(tag_ws("&"), skip_whitespace(add)),
         Expression::And,
     )(i)
 }
 
+#[inline]
 fn add(i: &str) -> IResult<&str, Expression> {
-    map(
+    map_vec(
         separated_nonempty_list(tag_ws("+"), skip_whitespace(subtract)),
         Expression::Add,
     )(i)
 }
 
+#[inline]
 fn subtract(i: &str) -> IResult<&str, Expression> {
-    map(
+    map_vec(
         separated_nonempty_list(tag_ws("-"), skip_whitespace(multiply)),
         Expression::Subtract,
     )(i)
 }
 
+#[inline]
 fn multiply(i: &str) -> IResult<&str, Expression> {
-    map(
+    map_vec(
         separated_nonempty_list(tag_ws("*"), skip_whitespace(divide)),
         Expression::Multiply,
     )(i)
 }
 
+#[inline]
 fn divide(i: &str) -> IResult<&str, Expression> {
-    map(
+    map_vec(
         separated_nonempty_list(tag_ws("/"), skip_whitespace(not)),
         Expression::Divide,
     )(i)
 }
 
+#[inline]
 fn not(i: &str) -> IResult<&str, Expression> {
     alt((
         map(preceded(tag("!"), literal), |e| {
@@ -76,6 +95,7 @@ fn not(i: &str) -> IResult<&str, Expression> {
     ))(i)
 }
 
+#[inline]
 fn negative(i: &str) -> IResult<&str, Expression> {
     alt((
         map(preceded(tag("-"), literal), |e| {
@@ -85,13 +105,31 @@ fn negative(i: &str) -> IResult<&str, Expression> {
     ))(i)
 }
 
+#[inline]
 fn literal(i: &str) -> IResult<&str, Expression> {
     alt((value, map(Literal::parse, Expression::Literal)))(i)
 }
 
+#[inline]
 fn value(i: &str) -> IResult<&str, Expression> {
     alt((
         map(Value::parse, Expression::Value),
         util::delimited_paren(Expression::parse_ws),
     ))(i)
+}
+
+fn map_vec<'a, T>(
+    f: impl Fn(&'a str) -> IResult<&'a str, Vec<T>>,
+    g: impl Fn(Vec<T>) -> T,
+) -> impl Fn(&'a str) -> IResult<&'a str, T> {
+    move |s: &str| {
+        let (rest, mut res): (&str, Vec<T>) = f(s)?;
+        let len = res.len();
+
+        if len == 1 {
+            Ok((rest, res.pop().unwrap()))
+        } else {
+            Ok((rest, g(res)))
+        }
+    }
 }

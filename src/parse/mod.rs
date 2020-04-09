@@ -98,6 +98,7 @@ mod tests {
                 Function {
                     name: Ident("hello".to_string()),
                     args: Vec::new(),
+                    return_type: None,
                     body: Body {
                         statements: Vec::new()
                     },
@@ -189,6 +190,38 @@ pub enum Statement {
         then: Box<Body>,
     },
     Return(Option<Expression>),
+}
+
+#[cfg(test)]
+mod statement_tests {
+    use super::*;
+    #[test]
+    fn test_let() {
+        assert_eq!(
+            Statement::parse_ws("let x"),
+            Ok((
+                "",
+                Statement::Let {
+                    name: Ident("x".to_string()),
+                    assign: None
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_let_assign_expression() {
+        assert_eq!(
+            Statement::parse_ws("let x = true"),
+            Ok((
+                "",
+                Statement::Let {
+                    name: Ident("x".to_string()),
+                    assign: Some(Expression::Value(value::Value::Boolean(true)))
+                }
+            ))
+        );
+    }
 }
 
 impl Parse for Statement {
