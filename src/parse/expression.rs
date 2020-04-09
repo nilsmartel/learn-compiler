@@ -17,8 +17,8 @@ pub enum Expression {
     Divide(Vec<Expression>),
     Not(Box<Expression>),
     Negative(Box<Expression>),
-    Literal(Literal),
     Value(value::Value),
+    Literal(Literal),
 }
 
 #[cfg(test)]
@@ -29,6 +29,20 @@ mod test_expression {
         assert_eq!(
             Expression::parse("true"),
             Ok(("", Expression::Value(Value::Boolean(true))),)
+        );
+    }
+
+    #[test]
+    fn literal() {
+        assert_eq!(
+            Expression::parse("hannover"),
+            Ok((
+                "",
+                Expression::Literal(Literal {
+                    ident: Ident("hannover".to_string()),
+                    call_arguments: None
+                })
+            ))
         );
     }
 }
