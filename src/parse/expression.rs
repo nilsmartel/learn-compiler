@@ -5,6 +5,8 @@ use nom::{
 };
 use util::{skip_whitespace, tag_ws};
 
+// Note, using a Vec here isn't nice, since it's length is expected to be >2,
+// the chosen type `Vec` does not reflect that. e.g. parse, don't validate
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Expression {
     Or(Vec<Expression>),
