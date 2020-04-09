@@ -124,12 +124,13 @@ impl Parse for Ast {
 pub struct Function {
     pub name: Ident,
     pub args: Vec<(Ident, Type)>,
+    pub return_type: Option<Type>,
     pub body: Body,
 }
 
 impl Parse for Function {
     fn parse(input: &str) -> IResult<&str, Self> {
-        use nom::combinator::map;
+        use nom::combinator::{map, opt};
         use nom::multi::separated_list;
         use nom::sequence::{preceded, separated_pair, tuple};
         use util::{skip_whitespace, tag_ws};
@@ -140,10 +141,21 @@ impl Parse for Function {
             identtype_parser,
         )));
         let body_parser = skip_whitespace(util::delimited_curly(Body::parse_ws));
+        let return_type_parser = opt(preceded(tag_ws("->"), Type::parse_ws));
 
         map(
-            tuple((function_name_parser, args_parser, body_parser)),
-            |(name, args, body)| Function { name, args, body },
+            tuple((
+                function_name_parser,
+                args_parser,
+                return_type_parser,
+                body_parser,
+            )),
+            |(name, args, return_type, body)| Function {
+                name,
+                args,
+                return_type,
+                body,
+            },
         )(input)
     }
 }
