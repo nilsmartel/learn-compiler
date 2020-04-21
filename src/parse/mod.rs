@@ -1,11 +1,13 @@
 pub mod expression;
 mod keyword;
 mod literal;
+mod tuple;
 mod util;
 mod value;
 pub use expression::Expression;
 pub use literal::Literal;
 use nom::IResult;
+pub use tuple::*;
 pub use value::Value;
 
 pub trait Parse

@@ -4,7 +4,7 @@ use nom::IResult;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Literal {
     pub ident: Ident,
-    pub call_arguments: Option<Vec<Expression>>,
+    pub call_arguments: Tuple,
 }
 
 impl Parse for Literal {
@@ -14,18 +14,17 @@ impl Parse for Literal {
             multi::separated_list,
             sequence::pair,
         };
-        map(
-            pair(
-                Ident::parse,
-                opt(util::skip_whitespace(util::delimited_paren(
-                    separated_list(util::tag_ws(","), Expression::parse_ws),
-                ))),
-            ),
-            |(ident, call_arguments)| Literal {
+        let (rest, ident) = dbg!(Ident::parse(input))?;
+
+        let (rest, call_arguments) = dbg!(Tuple::parse_ws(rest))?;
+
+        Ok((
+            rest,
+            Literal {
                 ident,
                 call_arguments,
             },
-        )(input)
+        ))
     }
 }
 

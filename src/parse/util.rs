@@ -27,5 +27,5 @@ pub fn delimited_curly<'a, T>(
 pub fn delimited_paren<'a, T>(
     f: impl Fn(&'a str) -> IResult<&'a str, T>,
 ) -> impl Fn(&'a str) -> IResult<&'a str, T> {
-    delimited(char('('), f, char(')'))
+    delimited(char('('), f, tag_ws(")"))
 }
