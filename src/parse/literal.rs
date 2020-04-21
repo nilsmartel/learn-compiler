@@ -4,7 +4,7 @@ use nom::IResult;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Literal {
     pub ident: Ident,
-    pub call_arguments: Tuple,
+    pub call_arguments: Option<Tuple>,
 }
 
 impl Parse for Literal {
@@ -16,7 +16,7 @@ impl Parse for Literal {
         };
         let (rest, ident) = dbg!(Ident::parse(input))?;
 
-        let (rest, call_arguments) = dbg!(Tuple::parse_ws(rest))?;
+        let (rest, call_arguments) = dbg!(opt(Tuple::parse_ws)(rest))?;
 
         Ok((
             rest,
@@ -53,7 +53,7 @@ mod literal_tests {
                 "",
                 Literal {
                     ident: Ident("leibniz".to_string()),
-                    call_arguments: Some(Vec::new())
+                    call_arguments: Some(Tuple::new())
                 }
             ))
         );

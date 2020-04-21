@@ -29,3 +29,20 @@ pub fn delimited_paren<'a, T>(
 ) -> impl Fn(&'a str) -> IResult<&'a str, T> {
     delimited(char('('), f, tag_ws(")"))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use nom::bytes::complete::tag;
+
+    #[test]
+    fn delimited1() {
+        let res = delimited_paren(tag("hello"))("(hello)");
+        assert_eq!(res, Ok(("", "hello")));
+    }
+    #[test]
+    fn delimited2() {
+        let res = delimited_curly(tag("hello"))("{hello}");
+        assert_eq!(res, Ok(("", "hello")));
+    }
+}
