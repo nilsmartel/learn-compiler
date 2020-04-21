@@ -14,9 +14,9 @@ impl Parse for Literal {
             multi::separated_list,
             sequence::pair,
         };
-        let (rest, ident) = dbg!(Ident::parse(input))?;
+        let (rest, ident) = Ident::parse(input)?;
 
-        let (rest, call_arguments) = dbg!(opt(Tuple::parse_ws)(rest))?;
+        let (rest, call_arguments) = opt(Tuple::parse_ws)(rest)?;
 
         Ok((
             rest,

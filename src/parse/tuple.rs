@@ -3,7 +3,7 @@ use crate::parse::{
     Expression, Parse,
 };
 
-use nom::{combinator::map, multi::separated_list};
+use nom::{character::complete::char, combinator::map, multi::separated_list};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Tuple(Vec<Expression>);
@@ -21,10 +21,11 @@ impl Tuple {
 
 impl Parse for Tuple {
     fn parse(input: &str) -> nom::IResult<&str, Self> {
-        map(
-            delimited_paren(separated_list(tag_ws(","), Expression::parse_ws)),
-            Tuple,
-        )(input)
+        let (rest, _) = dbg!(char('(')(input))?;
+        let (rest, expr) = dbg!(separated_list(tag_ws(","), Expression::parse_ws)(rest))?;
+        let (rest, _) = tag_ws(")")(rest)?;
+
+        Ok((rest, Tuple(expr)))
     }
 }
 

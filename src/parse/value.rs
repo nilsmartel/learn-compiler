@@ -26,12 +26,12 @@ fn parse_bool(input: &str) -> IResult<&str, bool> {
     alt((map(tag("false"), |_| false), map(tag("true"), |_| true)))(input)
 }
 fn parse_int(input: &str) -> IResult<&str, i64> {
-    use nom::{bytes::complete::take_while, combinator::map};
+    use nom::{bytes::complete::take_while1, combinator::map};
     fn is_digit(c: char) -> bool {
         c >= '0' && c <= '9'
     }
 
-    map(take_while(is_digit), |s: &str| s.parse::<i64>().unwrap())(input)
+    map(take_while1(is_digit), |s: &str| s.parse::<i64>().unwrap())(input)
 }
 
 fn parse_float(input: &str) -> IResult<&str, f64> {
@@ -48,12 +48,14 @@ mod test {
 
     #[test]
     fn bool() {
+        assert!(parse_int("").is_err());
         assert_eq!(parse_bool("true"), Ok(("", true)));
         assert_eq!(parse_bool("false"), Ok(("", false)));
     }
 
     #[test]
     fn int() {
+        assert!(parse_int("").is_err());
         assert_eq!(parse_int("0"), Ok(("", 0)));
         assert_eq!(parse_int("123"), Ok(("", 123)));
         assert_eq!(parse_int("987654321"), Ok(("", 987654321)));
@@ -61,6 +63,7 @@ mod test {
 
     #[test]
     fn float() {
+        assert!(parse_int("").is_err());
         assert_eq!(parse_float("0.0"), Ok(("", 0.0)));
         assert_eq!(parse_float("0.000000"), Ok(("", 0.0)));
         assert_eq!(parse_float("123.456"), Ok(("", 123.456)));
