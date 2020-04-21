@@ -21,11 +21,10 @@ impl Tuple {
 
 impl Parse for Tuple {
     fn parse(input: &str) -> nom::IResult<&str, Self> {
-        let (rest, _) = dbg!(char('(')(input))?;
-        let (rest, expr) = dbg!(separated_list(tag_ws(","), Expression::parse_ws)(rest))?;
-        let (rest, _) = tag_ws(")")(rest)?;
-
-        Ok((rest, Tuple(expr)))
+        map(
+            delimited_paren(separated_list(tag_ws(","), Expression::parse_ws)),
+            Tuple,
+        )(input)
     }
 }
 
