@@ -21,7 +21,7 @@ pub fn tag_ws<'a>(s: &'a str) -> impl Fn(&'a str) -> IResult<&'a str, &'a str> {
 pub fn delimited_curly<'a, T>(
     f: impl Fn(&'a str) -> IResult<&'a str, T>,
 ) -> impl Fn(&'a str) -> IResult<&'a str, T> {
-    delimited(char('{'), f, char('}'))
+    delimited(char('{'), f, tag_ws("}"))
 }
 
 pub fn delimited_paren<'a, T>(

@@ -195,6 +195,37 @@ pub enum Statement {
     Expression(Box<Expression>),
 }
 
+impl Statement {
+    fn parse_if(i: &str) -> IResult<&str, Statement> {
+        use nom::{
+            combinator::{map, opt},
+            sequence::preceded,
+        };
+        use util::{delimited_curly, skip_whitespace};
+        let (rest, condition) = preceded(keyword::If::parse, Expression::parse_ws)(i)?;
+        let (rest, then) = dbg!(skip_whitespace(map(
+            delimited_curly(Body::parse_ws),
+            Box::new
+        ))(rest))?;
+        let (rest, otherwise) = dbg!(opt(map(
+            preceded(
+                keyword::Else::parse_ws,
+                skip_whitespace(delimited_curly(Body::parse_ws)),
+            ),
+            Box::new,
+        ))(rest))?;
+
+        Ok((
+            rest,
+            Statement::If {
+                condition,
+                then,
+                otherwise,
+            },
+        ))
+    }
+}
+
 #[cfg(test)]
 mod statement_tests {
     use super::*;
@@ -228,6 +259,21 @@ mod statement_tests {
 
     #[test]
     fn test_if() {
+        assert_eq!(
+            Statement::parse_ws("if true { true }"),
+            Ok((
+                "",
+                Statement::If {
+                    condition: Expression::parse("true").unwrap().1,
+                    then: Box::new(Body::parse("true").unwrap().1),
+                    otherwise: None,
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_if_else() {
         assert_eq!(
             Statement::parse_ws("if true { true } else { false }"),
             Ok((
@@ -269,24 +315,7 @@ impl Parse for Statement {
                     then: Box::new(then),
                 },
             ),
-            map(
-                tuple((
-                    preceded(keyword::If::parse, Expression::parse_ws),
-                    skip_whitespace(delimited_curly(Body::parse_ws)),
-                    opt(map(
-                        preceded(
-                            keyword::Else::parse_ws,
-                            skip_whitespace(delimited_curly(Body::parse_ws)),
-                        ),
-                        Box::new,
-                    )),
-                )),
-                |(condition, then, otherwise)| Statement::If {
-                    condition,
-                    then: Box::new(then),
-                    otherwise,
-                },
-            ),
+            Statement::parse_if,
             map(
                 preceded(keyword::Return::parse, opt(Expression::parse_ws)),
                 Statement::Return,
