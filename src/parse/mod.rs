@@ -192,6 +192,7 @@ pub enum Statement {
         then: Box<Body>,
     },
     Return(Option<Expression>),
+    Expression(Box<Expression>),
 }
 
 #[cfg(test)]
@@ -220,6 +221,21 @@ mod statement_tests {
                 Statement::Let {
                     name: Ident("x".to_string()),
                     assign: Some(Expression::Value(value::Value::Boolean(true)))
+                }
+            ))
+        );
+    }
+
+    #[test]
+    fn test_if() {
+        assert_eq!(
+            Statement::parse_ws("if true { true } else { false }"),
+            Ok((
+                "",
+                Statement::If {
+                    condition: Expression::parse("true").unwrap().1,
+                    then: Box::new(Body::parse("true").unwrap().1),
+                    otherwise: Some(Box::new(Body::parse("true").unwrap().1)),
                 }
             ))
         );
@@ -275,6 +291,7 @@ impl Parse for Statement {
                 preceded(keyword::Return::parse, opt(Expression::parse_ws)),
                 Statement::Return,
             ),
+            map(Expression::parse, |e| Statement::Expression(Box::new(e))),
         ))(input)
     }
 }
