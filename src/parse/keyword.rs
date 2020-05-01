@@ -48,3 +48,18 @@ impl Parse for Let {
         map(tag("let"), |_| Let {})(input)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn keywords() {
+        assert_eq!(If::parse("if").unwrap().0, "");
+        assert_eq!(Else::parse("else").unwrap().0, "");
+
+        assert_eq!(While::parse("while").unwrap().0, "");
+        assert_eq!(Return::parse("return").unwrap().0, "");
+        assert_eq!(Let::parse("let").unwrap().0, "");
+    }
+}
