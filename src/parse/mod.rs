@@ -193,6 +193,28 @@ mod bodytests {
             ))
         );
     }
+
+    #[test]
+    fn complex_body() {
+        assert_eq!(
+            Body::parse(
+                "
+            doStuff()
+            doOtherStuff()"
+            ),
+            Ok((
+                "",
+                Body {
+                    statements: vec![
+                        Statement::Expression(Box::new(Expression::parse("doStuff()").unwrap().1)),
+                        Statement::Expression(Box::new(
+                            Expression::parse("doOtherStuff()").unwrap().1
+                        ))
+                    ]
+                }
+            ))
+        );
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
