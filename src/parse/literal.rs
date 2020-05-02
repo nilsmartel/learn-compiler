@@ -9,11 +9,7 @@ pub struct Literal {
 
 impl Parse for Literal {
     fn parse(input: &str) -> IResult<&str, Self> {
-        use nom::{
-            combinator::{map, opt},
-            multi::separated_list,
-            sequence::pair,
-        };
+        use nom::combinator::opt;
         let (rest, ident) = Ident::parse(input)?;
 
         let (rest, call_arguments) = opt(Tuple::parse_ws)(rest)?;

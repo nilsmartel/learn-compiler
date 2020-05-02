@@ -8,17 +8,6 @@ use nom::{character::complete::char, combinator::map, multi::separated_list};
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Tuple(Vec<Expression>);
 
-impl Tuple {
-    pub fn new() -> Self {
-        Tuple(Vec::new())
-    }
-
-    pub fn with(mut self, e: Expression) -> Self {
-        self.0.push(e);
-        self
-    }
-}
-
 impl Parse for Tuple {
     fn parse(input: &str) -> nom::IResult<&str, Self> {
         map(

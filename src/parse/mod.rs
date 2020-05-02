@@ -203,17 +203,14 @@ impl Statement {
         };
         use util::{delimited_curly, skip_whitespace};
         let (rest, condition) = preceded(keyword::If::parse, Expression::parse_ws)(i)?;
-        let (rest, then) = dbg!(skip_whitespace(map(
-            delimited_curly(Body::parse_ws),
-            Box::new
-        ))(rest))?;
-        let (rest, otherwise) = dbg!(opt(map(
+        let (rest, then) = skip_whitespace(map(delimited_curly(Body::parse_ws), Box::new))(rest)?;
+        let (rest, otherwise) = opt(map(
             preceded(
                 keyword::Else::parse_ws,
                 skip_whitespace(delimited_curly(Body::parse_ws)),
             ),
             Box::new,
-        ))(rest))?;
+        ))(rest)?;
 
         Ok((
             rest,
