@@ -283,6 +283,20 @@ mod statement_tests {
             ))
         );
     }
+
+    #[test]
+    fn test_while() {
+        assert_eq!(
+            Statement::parse_ws("while true { doStuff() }"),
+            Ok((
+                "",
+                Statement::While {
+                    condition: Expression::parse("true").unwrap().1,
+                    then: Box::new(Body::parse("doStuff()").unwrap().1),
+                }
+            ))
+        );
+    }
 }
 
 impl Parse for Statement {
