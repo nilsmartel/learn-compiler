@@ -9,6 +9,8 @@ use util::{skip_whitespace, tag_ws};
 // the chosen type `Vec` does not reflect that. e.g. parse, don't validate
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Expression {
+    Equals(Vec<Expression>),
+    NotEqual(Vec<Expression>),
     Or(Vec<Expression>),
     And(Vec<Expression>),
     Add(Vec<Expression>),
@@ -49,8 +51,24 @@ mod test_expression {
 
 impl Parse for Expression {
     fn parse(input: &str) -> IResult<&str, Self> {
-        or(input)
+        eq(input)
     }
+}
+
+#[inline]
+fn eq(i: &str) -> IResult<&str, Expression> {
+    map_vec(
+        separated_nonempty_list(tag_ws("=="), skip_whitespace(nq)),
+        Expression::Equals,
+    )(i)
+}
+
+#[inline]
+fn nq(i: &str) -> IResult<&str, Expression> {
+    map_vec(
+        separated_nonempty_list(tag_ws("!="), skip_whitespace(or)),
+        Expression::NotEqual,
+    )(i)
 }
 
 #[inline]

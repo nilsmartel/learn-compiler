@@ -88,7 +88,7 @@ mod tests {
 
         assert!(result.is_ok());
 
-        assert_eq!(result.unwrap().0, "");
+        assert_eq!(result.unwrap().0, "\n");
     }
 
     #[test]
@@ -146,10 +146,10 @@ impl Parse for Function {
         let body_parser = skip_whitespace(util::delimited_curly(Body::parse_ws));
         let return_type_parser = opt(preceded(tag_ws("->"), Type::parse_ws));
 
-        let (input, name) = function_name_parser(input)?;
-        let (input, args) = args_parser(input)?;
-        let (input, return_type) = return_type_parser(input)?;
-        let (input, body) = body_parser(input)?;
+        let (input, name) = dbg!(function_name_parser(input))?;
+        let (input, args) = dbg!(args_parser(input))?;
+        let (input, return_type) = dbg!(return_type_parser(input))?;
+        let (input, body) = dbg!(body_parser(input))?;
 
         Ok((
             input,
