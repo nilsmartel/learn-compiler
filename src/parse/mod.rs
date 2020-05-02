@@ -21,7 +21,7 @@ where
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct Ident(pub String);
 
 impl Parse for Ident {
@@ -56,7 +56,7 @@ mod ident_tests {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Hash, Debug, Eq, PartialEq)]
 pub struct Type(pub String);
 
 impl Parse for Type {
