@@ -278,7 +278,7 @@ mod statement_tests {
                 Statement::If {
                     condition: Expression::parse("true").unwrap().1,
                     then: Box::new(Body::parse("true").unwrap().1),
-                    otherwise: Some(Box::new(Body::parse("true").unwrap().1)),
+                    otherwise: Some(Box::new(Body::parse("false").unwrap().1)),
                 }
             ))
         );
