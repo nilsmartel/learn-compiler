@@ -290,7 +290,7 @@ impl Parse for Statement {
         use nom::{
             branch::alt,
             combinator::{map, opt},
-            sequence::{pair, preceded, tuple},
+            sequence::{pair, preceded},
         };
         use util::{delimited_curly, skip_whitespace, tag_ws};
 
