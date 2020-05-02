@@ -133,9 +133,9 @@ pub struct Function {
 
 impl Parse for Function {
     fn parse(input: &str) -> IResult<&str, Self> {
-        use nom::combinator::{map, opt};
+        use nom::combinator::opt;
         use nom::multi::separated_list;
-        use nom::sequence::{preceded, separated_pair, tuple};
+        use nom::sequence::{preceded, separated_pair};
         use util::{skip_whitespace, tag_ws};
         let function_name_parser = preceded(keyword::Function::parse, Ident::parse_ws);
         let identtype_parser = separated_pair(Ident::parse_ws, tag_ws(":"), Type::parse_ws);
@@ -146,20 +146,20 @@ impl Parse for Function {
         let body_parser = skip_whitespace(util::delimited_curly(Body::parse_ws));
         let return_type_parser = opt(preceded(tag_ws("->"), Type::parse_ws));
 
-        map(
-            tuple((
-                function_name_parser,
-                args_parser,
-                return_type_parser,
-                body_parser,
-            )),
-            |(name, args, return_type, body)| Function {
+        let (input, name) = function_name_parser(input)?;
+        let (input, args) = args_parser(input)?;
+        let (input, return_type) = return_type_parser(input)?;
+        let (input, body) = body_parser(input)?;
+
+        Ok((
+            input,
+            Function {
                 name,
                 args,
                 return_type,
                 body,
             },
-        )(input)
+        ))
     }
 }
 
