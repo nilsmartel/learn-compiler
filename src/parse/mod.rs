@@ -176,6 +176,25 @@ impl Parse for Body {
     }
 }
 
+#[cfg(test)]
+mod bodytests {
+    use super::*;
+    #[test]
+    fn simple_body() {
+        assert_eq!(
+            Body::parse("doStuff()"),
+            Ok((
+                "",
+                Body {
+                    statements: vec![Statement::Expression(Box::new(
+                        Expression::parse("doStuff()").unwrap().1
+                    ))]
+                }
+            ))
+        );
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Statement {
     Let {
