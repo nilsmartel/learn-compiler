@@ -1,0 +1,75 @@
+
+function sum(a, b) {
+    return a + b
+}
+
+function sum
+a
+b
+    tmp
+add tmp, *a, *b
+return tmp
+
+
+function abc(x) {
+    return x*2 + 7
+}
+
+function abc
+x
+tmp
+tmp2
+mul add, $x, 2
+add tmp2, *tmp, 7
+return tmp2
+
+
+function ifelse(b, n) {
+    if b == true {
+        return 8
+    }
+
+    return n
+}
+
+function ifelse
+b
+n
+jumpif *a branch1
+jump branch2
+branch1:
+    return 8
+branch2:
+    return *n
+
+
+function ifelse(b, n) {
+    let x = 0
+    if b == true {
+        let something = 7
+        something += 1
+        x += something
+    } else {
+        x += n
+    }
+
+    return x
+}
+
+funciton ifelse
+b
+n
+x
+jumpif *a branch1
+jump branch2
+branch1:
+    something
+    store something, 7
+    add something, *something, 1
+    add x, *x, something
+    jump branch3
+branch2:
+    add x, *x, n
+    jump branch3
+branch3:
+    return x
