@@ -1,8 +1,10 @@
 
+// code
 function sum(a, b) {
     return a + b
 }
 
+// asm
 function sum
 a
 b
@@ -10,11 +12,14 @@ b
 add tmp, *a, *b
 return tmp
 
+---
 
+// code
 function abc(x) {
     return x*2 + 7
 }
 
+// asm
 function abc
 x
 tmp
@@ -23,6 +28,7 @@ mul add, $x, 2
 add tmp2, *tmp, 7
 return tmp2
 
+---
 
 function ifelse(b, n) {
     if b == true {
@@ -32,6 +38,7 @@ function ifelse(b, n) {
     return n
 }
 
+// asm
 function ifelse
 b
 n
@@ -42,6 +49,7 @@ branch1:
 branch2:
     return *n
 
+---
 
 function ifelse(b, n) {
     let x = 0
@@ -56,7 +64,8 @@ function ifelse(b, n) {
     return x
 }
 
-funciton ifelse
+// asm
+function ifelse
 b
 n
 x
@@ -73,3 +82,96 @@ branch2:
     jump branch3
 branch3:
     return x
+
+---
+
+function nested(a, b) {
+    if (a) {
+        let c = 7
+        if (b) {
+            let n = 0
+        }
+    }
+
+    return void
+}
+
+// Observation:
+// a block may have different entry points, but it's scope does not differ
+
+// asm
+function nested
+a
+b
+jumpif *a branch1
+jump branchEnd      // Note how after jumpif there still _has_ to come _jump_ + ( jumpif* jump) can only appear at the very end of a block
+branch1:
+    c
+    store c, 7
+    jumpif *b branch2
+    jump branch3
+branch2:
+    n
+    store n, 0
+    jump branch3
+branch3:            // Empty branch, can be optimised quite easily
+    jump branchEnd
+branchEnd:
+    return ()       // return void, empty tuple of bytes
+
+
+---
+
+function nested_return(a, b) {
+    if (a) {
+        let c = 7
+        if (b) {
+            return
+        }
+    }
+
+    return void
+}
+
+// asm
+function nested_return
+a
+b
+jumpif *a branch1
+jump branchEnd
+branch1:
+    c
+    store c, 7
+    jumpif *b branch2
+    jump branch3
+branch2:
+    return              // how to implement return? Problems: Clear Scope
+branch3:
+    jump branchEnd
+branchEnd:
+    return ()
+
+---
+// different attempt. Scope levels
+
+function x() {
+    let a
+    let b
+    block {
+        let x
+        block {
+            let y
+            let z
+        }
+        let w
+    }
+    let v
+}
+
+// scopes
+scope1: (a, b)
+scope2: scope1 : (x)
+scope3: scope2 : (y, z)
+scope4: scope2 : (w)
+scope5: scope1 : (v)
+// Problem: Not clear, that the scopes form a tree graph
