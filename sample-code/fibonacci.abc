@@ -1,4 +1,4 @@
-function fibonacci(n: u64) -> u64 {
+function fibonacci(n: uint64) -> uint64 {
     if n == 0 {
         return 0
     }
