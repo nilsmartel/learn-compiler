@@ -115,6 +115,12 @@ pub struct Ast {
     pub functions: Vec<Function>,
 }
 
+impl Ast {
+    pub fn new(s: &str) -> IResult<&str, Ast> {
+        return Ast::parse_ws(s);
+    }
+}
+
 impl Parse for Ast {
     fn parse(input: &str) -> IResult<&str, Self> {
         use nom::{combinator::map, multi::many0};
